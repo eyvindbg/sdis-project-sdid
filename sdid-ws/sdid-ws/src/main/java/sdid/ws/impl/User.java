@@ -5,7 +5,7 @@ public class User {
 	private String userId;
 	private String emailAddress;
 	private String password;
-	private String token;
+	private byte[] token;
 	
 	public User(String userId, String emailAddress, String password) {
 		this.userId = userId;
@@ -21,11 +21,11 @@ public class User {
 		this.password = password;
 	}
 
-	public String getToken() {
+	public byte[] getToken() {
 		return token;
 	}
 
-	public void setToken(String token) {
+	public void setToken(byte[] token) {
 		this.token = token;
 	}
 
