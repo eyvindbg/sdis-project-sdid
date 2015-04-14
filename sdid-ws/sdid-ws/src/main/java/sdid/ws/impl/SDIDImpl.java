@@ -24,7 +24,7 @@ public class SDIDImpl implements SDId {
 			"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	
-	ArrayList<User> users = new ArrayList<User>();
+	private ArrayList<User> users = new ArrayList<User>();
 
 	public void createUser(String userId, String emailAddress)
 			throws EmailAlreadyExists_Exception, InvalidEmail_Exception,
@@ -46,49 +46,55 @@ public class SDIDImpl implements SDId {
 
 	public void renewPassword(String userId) throws UserDoesNotExist_Exception {
 		
-		if (userExists(userId)) throw new UserDoesNotExist_Exception("User does not exist.", new UserDoesNotExist());
+		if (!userExists(userId)) throw new UserDoesNotExist_Exception("User does not exist.", new UserDoesNotExist());
 		
 		for (int i = 0; i < users.size(); i++) {
-			if (users.get(i).getUserId().equals(userId)) users.get(i).setPassword(generatePassword());
+			if (users.get(i).getUserId().equals(userId)) {
+				users.get(i).setPassword(generatePassword());
+				break;
+			}
 		}
 		
 	}
 
 	public void removeUser(String userId) throws UserDoesNotExist_Exception {
 
-		if (userExists(userId)) throw new UserDoesNotExist_Exception("User does not exist.", new UserDoesNotExist());
+		if (!userExists(userId)) throw new UserDoesNotExist_Exception("User does not exist.", new UserDoesNotExist());
 		
 		for (int i = 0; i < users.size(); i++) {
-			if (users.get(i).getUserId().equals(userId)) users.remove(i);
+			if (users.get(i).getUserId().equals(userId)) {
+				users.remove(i);
+				break;
+			}
 		}
-		
 	}
 
 	public byte[] requestAuthentication(String userId, byte[] reserved) throws AuthReqFailed_Exception {
 		
 		User user = null;
+		String password = new String(reserved);
 		
 		for (int i = 0; i < users.size(); i++) {
 			if (users.get(i).getUserId().equals(userId)) user = users.get(i);
 		}
 		
-		if (!user.getToken().equals(reserved)) throw new AuthReqFailed_Exception("Auth failed.", new AuthReqFailed());
+		if (user == null) throw new AuthReqFailed_Exception("User does not exist.", new AuthReqFailed());
 		
-		byte[] cred = user.getPassword().getBytes();
+		if (!password.equals(user.getPassword())) throw new AuthReqFailed_Exception("Password incorrect.", new AuthReqFailed());
 		
-		return cred;
+		return new byte[]{1};
 	}
 	
 	private boolean userExists(String userId) {
 		for (int i = 0; i < users.size(); i++) {
-			if (users.get(i).getEmailAddress().equals(userId)) return true;
+			if (users.get(i).getUserId().equals(userId)) return true;
 		}
 		return false;
 	}
 	
 	private boolean emailExists(String emailAddress) {
 		for (int i = 0; i < users.size(); i++) {
-			if (users.get(i).getUserId().equals(emailAddress)) return true;
+			if (users.get(i).getEmailAddress().equals(emailAddress)) return true;
 		}
 		return false;
 	}
@@ -100,7 +106,7 @@ public class SDIDImpl implements SDId {
 	}
 	
 	private boolean validUserId(String userId) {
-		if (userId.length() < 2 || userId.length() > 10) return false;
+		if (userId == null || userId.equals("")) return false;
 		return true;
 	}
 	
@@ -122,4 +128,7 @@ public class SDIDImpl implements SDId {
 		return UUID.randomUUID().toString().getBytes();
 	}
 
+	public ArrayList<User> getUsers() {
+		return users;
+	}
 }
