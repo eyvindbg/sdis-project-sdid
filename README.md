@@ -3,6 +3,7 @@
 Group SD 70
 
 Aliaksandra Sankova, 79487, aliaksandra.sankova@ist.utl.pt
+
 Eyvind Gjertsen, 80604, eyvindbg.gjertsen@tecnico.ulisboa.pt
 
 Repository:
