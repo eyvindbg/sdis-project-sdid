@@ -10,7 +10,6 @@
 
   <name>${project.artifactId}</name>
   
- 
   <dependencies>
     <!-- JAX-R API -->
     <dependency>
@@ -91,7 +90,6 @@
     <ws.url>http://localhost:8080/id-ws/endpoint</ws.url>
     <wsdl.url>${ws.url}?WSDL</wsdl.url>
   </properties>
-  
   
   <build>
     <plugins>
