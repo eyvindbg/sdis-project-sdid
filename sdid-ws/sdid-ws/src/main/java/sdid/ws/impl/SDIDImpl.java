@@ -2,6 +2,8 @@ package sdid.ws.impl;
 
 import javax.jws.*;
 
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.regex.*;
 import java.util.UUID;
@@ -62,10 +64,19 @@ public class SDIDImpl implements SDId {
 		
 	}
 
-	public byte[] requestAuthentication(String userId, byte[] reserved)
-			throws AuthReqFailed_Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public byte[] requestAuthentication(String userId, byte[] reserved) throws AuthReqFailed_Exception {
+		
+		User user = null;
+		
+		for (int i = 0; i < users.size(); i++) {
+			if (users.get(i).getUserId().equals(userId)) user = users.get(i);
+		}
+		
+		if (!user.getToken().equals(reserved)) throw new AuthReqFailed_Exception("Auth failed.", new AuthReqFailed());
+		
+		byte[] cred = user.getPassword().getBytes();
+		
+		return cred;
 	}
 	
 	private boolean userExists(String userId) {
@@ -94,7 +105,21 @@ public class SDIDImpl implements SDId {
 	}
 	
 	private String generatePassword() {
-		return UUID.randomUUID().toString();
+		String uuid = UUID.randomUUID().toString();
+		String password = "";
+		SecureRandom random = new SecureRandom();
+		
+		while (password.length() < 8) {
+			int i = random.nextInt(uuid.length());
+			if (uuid.charAt(i) != '-') password += uuid.charAt(i);
+		}
+		
+		return password;
+	}
+
+	
+	private byte[] generateToken() {
+		return UUID.randomUUID().toString().getBytes();
 	}
 
 }
